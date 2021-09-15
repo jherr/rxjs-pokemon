@@ -1,5 +1,6 @@
 import { createContext, useContext } from "react";
 import { BehaviorSubject, map, combineLatestWith } from "rxjs";
+import { useObservableState } from "observable-hooks";
 
 export interface Pokemon {
   id: number;
@@ -58,7 +59,21 @@ const PokemonContext = createContext({
   deck$,
 });
 
-export const usePokemon = () => useContext(PokemonContext);
+export const usePokemon = () => {
+  const { pokemon$ } = useContext(PokemonContext);
+  return [useObservableState(pokemon$, [])];
+};
+
+export const useDeck = () => {
+  const { deck$ } = useContext(PokemonContext);
+  return [useObservableState(deck$, [])];
+};
+
+export const useSelected = (): [number[], (value: number[]) => void] => {
+  const { selected$ } = useContext(PokemonContext);
+  const write = (value: number[]) => selected$.next(value);
+  return [useObservableState(selected$, []), write];
+};
 
 export const PokemonProvider: React.FunctionComponent = ({ children }) => (
   <PokemonContext.Provider
