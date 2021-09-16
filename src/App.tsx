@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 
 import "./App.css";
 
-import { PokemonProvider, usePokemon, useDeck, useSelected } from "./store";
+import { PokemonProvider, usePokemon, useDeck, toggleSelected } from "./store";
 
 const Deck = () => {
   const [deck] = useDeck();
@@ -28,7 +28,6 @@ const Deck = () => {
 
 const Search = () => {
   const [pokemon] = usePokemon();
-  const [selected, setSelected] = useSelected();
   const [search, setSearch] = useState("");
   const filteredPokemon = useMemo(
     () =>
@@ -51,13 +50,7 @@ const Search = () => {
             <input
               type="checkbox"
               checked={p.selected}
-              onChange={() => {
-                if (selected.includes(p.id)) {
-                  setSelected(selected.filter((id) => id !== p.id));
-                } else {
-                  setSelected([...selected, p.id]);
-                }
-              }}
+              onChange={() => toggleSelected(p)}
             />
             <strong>{p.name}</strong> - {p.power}
           </div>

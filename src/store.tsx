@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext } from "react";
 import { BehaviorSubject, map, combineLatestWith } from "rxjs";
 import { useObservableState } from "observable-hooks";
 
@@ -60,19 +60,19 @@ const PokemonContext = createContext({
 });
 
 export const usePokemon = () => {
-  const { pokemon$ } = useContext(PokemonContext);
   return [useObservableState(pokemon$, [])];
 };
 
 export const useDeck = () => {
-  const { deck$ } = useContext(PokemonContext);
   return [useObservableState(deck$, [])];
 };
 
-export const useSelected = (): [number[], (value: number[]) => void] => {
-  const { selected$ } = useContext(PokemonContext);
-  const write = (value: number[]) => selected$.next(value);
-  return [useObservableState(selected$, []), write];
+export const toggleSelected = (p: Pokemon) => {
+  if (selected$.value.includes(p.id)) {
+    selected$.next(selected$.value.filter((id) => id !== p.id));
+  } else {
+    selected$.next([...selected$.value, p.id]);
+  }
 };
 
 export const PokemonProvider: React.FunctionComponent = ({ children }) => (
